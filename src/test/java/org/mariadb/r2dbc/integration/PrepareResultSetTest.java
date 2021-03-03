@@ -100,7 +100,7 @@ public class PrepareResultSetTest extends BaseConnectionTest {
       arr1024[i] = (char) ('a' + (i % 10));
     }
 
-    char[] arr = new char[16000000];
+    char[] arr = new char[16_000_000];
     for (int i = 0; i < arr.length; i++) {
       arr[i] = (char) ('a' + (i % 10));
     }
@@ -142,7 +142,7 @@ public class PrepareResultSetTest extends BaseConnectionTest {
     Assumptions.assumeFalse(
         "mariadb:10.1".equals(System.getenv("DB")) || "mysql:5.6".equals(System.getenv("DB")));
 
-    char[] arr = new char[20000000];
+    char[] arr = new char[20_000_000];
     for (int i = 0; i < arr.length; i++) {
       arr[i] = (char) ('a' + (i % 10));
     }
@@ -154,6 +154,7 @@ public class PrepareResultSetTest extends BaseConnectionTest {
                 + "(t0 LONGTEXT) DEFAULT CHARSET=utf8mb4")
         .execute()
         .blockLast();
+    sharedConnPrepare.beginTransaction().block();
     sharedConnPrepare
         .createStatement("INSERT INTO parameterLengthEncodedLong VALUES (?)")
         .bind(0, val)
@@ -166,6 +167,7 @@ public class PrepareResultSetTest extends BaseConnectionTest {
         .as(StepVerifier::create)
         .expectNext(val)
         .verifyComplete();
+    sharedConnPrepare.commitTransaction().block();
   }
 
   @Test
