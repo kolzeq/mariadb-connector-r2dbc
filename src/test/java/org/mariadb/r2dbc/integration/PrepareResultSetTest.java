@@ -163,9 +163,9 @@ public class PrepareResultSetTest extends BaseConnectionTest {
     sharedConnPrepare
         .createStatement("SELECT * FROM parameterLengthEncodedLong")
         .execute()
-        .flatMap(r -> r.map((row, metadata) -> row.get(0, String.class)))
+        .flatMap(r -> r.map((row, metadata) -> row.get(0, String.class).length()))
         .as(StepVerifier::create)
-        .expectNext(val)
+        .expectNext(val.length())
         .verifyComplete();
     sharedConnPrepare.commitTransaction().block();
   }
