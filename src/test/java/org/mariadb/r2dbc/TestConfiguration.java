@@ -55,7 +55,7 @@ public class TestConfiguration {
 
       String val = System.getenv("TEST_REQUIRE_TLS");
       if ("1".equals(val)) {
-        String cert = System.getenv("TEST_DB_SERVER_CA");
+        String cert = System.getenv("TEST_DB_SERVER_CERT");
         defaultOther = "sslMode=enable&serverSslCert="+cert;
       } else {
         defaultOther = get("DB_OTHER", prop);

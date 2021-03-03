@@ -56,9 +56,8 @@ public class ErrorTest extends BaseConnectionTest {
   @Test
   void permissionDenied() throws Exception {
     sharedConn.createStatement("CREATE USER userWithoutRight").execute().blockLast();
-
     MariadbConnectionConfiguration conf =
-        TestConfiguration.defaultBuilder.clone().username("userWithoutRight").password("").build();
+        TestConfiguration.defaultBuilder.clone().allowPublicKeyRetrieval(true).username("userWithoutRight").password("").build();
     new MariadbConnectionFactory(conf)
         .create()
         .as(StepVerifier::create)
@@ -73,6 +72,7 @@ public class ErrorTest extends BaseConnectionTest {
     conf =
         TestConfiguration.defaultBuilder
             .clone()
+                .allowPublicKeyRetrieval(true)
             .username("userWithoutRight")
             .password("wrongpassword")
             .build();

@@ -26,34 +26,65 @@ import org.mariadb.r2dbc.api.MariadbConnection;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.io.File;
+
 public class Sha256PluginTest extends BaseConnectionTest {
 
   private static String rsaPublicKey;
   private static String cachingRsaPublicKey;
   private static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
+  private static boolean validPath(String path) {
+    if (path == null) return false;
+    try {
+      File f = new File(path);
+      return f.exists();
+    } catch (Exception e) {
+      // eat
+    }
+    return false;
+  }
+
   @BeforeAll
   public static void init() throws Exception {
     Assumptions.assumeTrue(!isMariaDBServer() && minVersion(5, 7, 0));
 
     rsaPublicKey = System.getProperty("rsaPublicKey");
-    if (rsaPublicKey == null && minVersion(8, 0, 0)) {
+    if (!validPath(rsaPublicKey) && minVersion(8, 0, 0)) {
       rsaPublicKey =
           sharedConn
               .createStatement("SELECT @@caching_sha2_password_public_key_path")
               .execute()
               .flatMap(r -> r.map((row, metadata) -> row.get(0, String.class)))
               .blockLast();
+      if (!validPath(rsaPublicKey)) {
+        rsaPublicKey = System.getenv("TEST_DB_SERVER_PUBLIC_KEY_PATH");
+        if (!validPath(rsaPublicKey)) {
+          File sslDir = new File(System.getProperty("user.dir") + "/ssl");
+          if (sslDir.exists() && sslDir.isDirectory()) {
+            rsaPublicKey = System.getProperty("user.dir") + "/ssl/public.key";
+          } else rsaPublicKey=null;
+        }
+      }
     }
 
     cachingRsaPublicKey = System.getProperty("cachingRsaPublicKey");
-    if (cachingRsaPublicKey == null) {
+    if (!validPath(cachingRsaPublicKey)) {
       cachingRsaPublicKey =
           sharedConn
               .createStatement("SELECT @@sha256_password_public_key_path")
               .execute()
               .flatMap(r -> r.map((row, metadata) -> row.get(0, String.class)))
               .blockLast();
+      if (!validPath(cachingRsaPublicKey)) {
+        cachingRsaPublicKey = System.getenv("TEST_DB_SERVER_PUBLIC_KEY_PATH");
+        if (!validPath(cachingRsaPublicKey)) {
+          File sslDir = new File(System.getProperty("user.dir") + "/ssl");
+          if (sslDir.exists() && sslDir.isDirectory()) {
+            cachingRsaPublicKey = System.getProperty("user.dir") + "/ssl/public.key";
+          } else cachingRsaPublicKey = null;
+        }
+      }
     }
 
     sharedConn
