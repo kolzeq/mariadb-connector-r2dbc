@@ -558,8 +558,8 @@ public class ConnectionTest extends BaseConnectionTest {
     try {
       IsolationLevel defaultValue = IsolationLevel.REPEATABLE_READ;
 
-      if (!"skysql".equals(System.getenv("srv"))
-              && !"skysql-ha".equals(System.getenv("srv"))) {
+      if ("skysql".equals(System.getenv("srv"))
+              || "skysql-ha".equals(System.getenv("srv"))) {
         defaultValue = IsolationLevel.READ_COMMITTED;
       }
 
