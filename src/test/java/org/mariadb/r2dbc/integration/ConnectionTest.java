@@ -26,6 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.mariadb.r2dbc.BaseConnectionTest;
 import org.mariadb.r2dbc.MariadbConnectionConfiguration;
@@ -84,6 +85,10 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void connectionError() throws Exception {
+    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
+            && !"skysql".equals(System.getenv("srv"))
+            && !"skysql-ha".equals(System.getenv("srv")));
+
     disableLog();
     MariadbConnection connection = createProxyCon();
     try {
@@ -105,6 +110,10 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void multipleCommandStack() throws Exception {
+    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
+            && !"skysql".equals(System.getenv("srv"))
+            && !"skysql-ha".equals(System.getenv("srv")));
+
     disableLog();
     MariadbConnection connection = createProxyCon();
     Runnable runnable = () -> proxy.stop();
@@ -137,6 +146,9 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void connectionWithoutErrorOnClose() throws Exception {
+    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
+            && !"skysql".equals(System.getenv("srv"))
+            && !"skysql-ha".equals(System.getenv("srv")));
     disableLog();
     MariadbConnection connection = createProxyCon();
     proxy.stop();
@@ -146,6 +158,9 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void connectionDuringError() throws Exception {
+    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
+                    && !"skysql".equals(System.getenv("srv"))
+                    && !"skysql-ha".equals(System.getenv("srv")));
     disableLog();
     MariadbConnection connection = createProxyCon();
     new java.util.Timer()
@@ -539,12 +554,18 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void getTransactionIsolationLevel() {
-    Assertions.assertEquals(
-        IsolationLevel.REPEATABLE_READ, sharedConn.getTransactionIsolationLevel());
-    sharedConn.setTransactionIsolationLevel(IsolationLevel.READ_UNCOMMITTED).block();
-    Assertions.assertEquals(
-        IsolationLevel.READ_UNCOMMITTED, sharedConn.getTransactionIsolationLevel());
-    sharedConn.setTransactionIsolationLevel(IsolationLevel.REPEATABLE_READ).block();
+    MariadbConnection connection = new MariadbConnectionFactory(TestConfiguration.defaultBuilder.build()).create().block();
+    try {
+      Assertions.assertEquals(
+              IsolationLevel.REPEATABLE_READ, connection.getTransactionIsolationLevel());
+      connection.setTransactionIsolationLevel(IsolationLevel.READ_UNCOMMITTED).block();
+      Assertions.assertEquals(
+              IsolationLevel.READ_UNCOMMITTED, connection.getTransactionIsolationLevel());
+      connection.setTransactionIsolationLevel(IsolationLevel.REPEATABLE_READ).block();
+    } finally {
+      connection.close().block();
+    }
+
   }
 
   @Test
@@ -635,14 +656,19 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void toStringTest() {
-    Assertions.assertTrue(
-        sharedConn
-                .toString()
-                .contains(
-                    "MariadbConnection{client=Client{isClosed=false, "
-                        + "context=ConnectionContext{")
-            && sharedConn
-                .toString()
-                .contains(", isolationLevel=IsolationLevel{sql='REPEATABLE READ'}}"));
+    MariadbConnection connection = new MariadbConnectionFactory(TestConfiguration.defaultBuilder.build()).create().block();
+    try {
+      Assertions.assertTrue(
+              connection
+                      .toString()
+                      .contains(
+                              "MariadbConnection{client=Client{isClosed=false, "
+                                      + "context=ConnectionContext{")
+                      && connection
+                      .toString()
+                      .contains(", isolationLevel=IsolationLevel{sql='REPEATABLE READ'}}"));
+    }finally {
+      connection.close().block();
+    }
   }
 }

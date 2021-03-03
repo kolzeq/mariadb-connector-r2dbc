@@ -91,6 +91,7 @@ public class TlsTest extends BaseConnectionTest {
 
   @Test
   void defaultHasNoSSL() throws Exception {
+    Assumptions.assumeFalse("maxscale".equals(System.getenv("srv")));
     Assumptions.assumeTrue(haveSsl(sharedConn));
     sharedConn
         .createStatement("SHOW STATUS like 'Ssl_version'")
@@ -239,6 +240,7 @@ public class TlsTest extends BaseConnectionTest {
 
   @Test
   void fullWithoutServerCert() throws Exception {
+    Assumptions.assumeFalse("maxscale".equals(System.getenv("srv")));
     Assumptions.assumeTrue(haveSsl(sharedConn));
     assertThrows(
         R2dbcTransientResourceException.class,

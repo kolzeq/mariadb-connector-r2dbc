@@ -66,7 +66,7 @@ public class ErrorTest extends BaseConnectionTest {
                 throwable instanceof R2dbcNonTransientResourceException
                     && (throwable
                         .getMessage()
-                        .contains("Access denied for user 'userWithoutRight'@'%' to database")))
+                        .contains("Access denied for user 'userWithoutRight'")))
         .verify();
 
     conf =

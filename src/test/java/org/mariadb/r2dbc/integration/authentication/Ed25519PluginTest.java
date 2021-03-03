@@ -56,9 +56,14 @@ public class Ed25519PluginTest extends BaseConnectionTest {
             .blockLast();
       }
       sharedConn
-          .createStatement("GRANT ALL on *.* to verificationEd25519AuthPlugin")
+          .createStatement("GRANT SELECT on `" + TestConfiguration.database +"`.* to verificationEd25519AuthPlugin")
           .execute()
           .blockLast();
+      sharedConn
+              .createStatement("FLUSH PRIVILEGES")
+              .execute()
+              .blockLast();
+
     }
   }
 

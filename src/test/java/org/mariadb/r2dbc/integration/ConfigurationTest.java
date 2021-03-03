@@ -45,6 +45,7 @@ public class ConfigurationTest extends BaseTest {
       encodedUser = TestConfiguration.username;
       encodedPwd = TestConfiguration.password;
     }
+
     ConnectionFactory factory =
         ConnectionFactories.get(
             String.format(
@@ -54,7 +55,7 @@ public class ConfigurationTest extends BaseTest {
                 TestConfiguration.host,
                 TestConfiguration.port,
                 TestConfiguration.database,
-                TestConfiguration.other == null ? "" : TestConfiguration.other));
+                    TestConfiguration.other == null ? "" : "?" + TestConfiguration.other.replace("\n", "\\n")));
     Connection connection = Mono.from(factory.create()).block();
     Flux.from(connection.createStatement("SELECT * FROM myTable").execute())
         .flatMap(r -> r.map((row, metadata) -> row.get(0, String.class)));
