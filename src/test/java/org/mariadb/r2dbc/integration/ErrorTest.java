@@ -108,6 +108,9 @@ public class ErrorTest extends BaseConnectionTest {
 
   @Test
   void rollbackException() {
+    Assumptions.assumeTrue( !"skysql".equals(System.getenv("srv"))
+            && !"skysql-ha".equals(System.getenv("srv")));
+
     MariadbConnection connection = null;
     MariadbConnection connection2 = null;
     try {

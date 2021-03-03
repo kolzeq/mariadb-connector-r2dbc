@@ -556,12 +556,19 @@ public class ConnectionTest extends BaseConnectionTest {
   void getTransactionIsolationLevel() {
     MariadbConnection connection = new MariadbConnectionFactory(TestConfiguration.defaultBuilder.build()).create().block();
     try {
+      IsolationLevel defaultValue = IsolationLevel.REPEATABLE_READ;
+
+      if (!"skysql".equals(System.getenv("srv"))
+              && !"skysql-ha".equals(System.getenv("srv"))) {
+        defaultValue = IsolationLevel.READ_COMMITTED;
+      }
+
       Assertions.assertEquals(
-              IsolationLevel.REPEATABLE_READ, connection.getTransactionIsolationLevel());
+              defaultValue, connection.getTransactionIsolationLevel());
       connection.setTransactionIsolationLevel(IsolationLevel.READ_UNCOMMITTED).block();
       Assertions.assertEquals(
               IsolationLevel.READ_UNCOMMITTED, connection.getTransactionIsolationLevel());
-      connection.setTransactionIsolationLevel(IsolationLevel.REPEATABLE_READ).block();
+      connection.setTransactionIsolationLevel(defaultValue).block();
     } finally {
       connection.close().block();
     }
@@ -663,10 +670,14 @@ public class ConnectionTest extends BaseConnectionTest {
                       .toString()
                       .contains(
                               "MariadbConnection{client=Client{isClosed=false, "
-                                      + "context=ConnectionContext{")
-                      && connection
-                      .toString()
-                      .contains(", isolationLevel=IsolationLevel{sql='REPEATABLE READ'}}"));
+                                      + "context=ConnectionContext{"));
+      if (!"skysql".equals(System.getenv("srv"))
+              && !"skysql-ha".equals(System.getenv("srv"))) {
+
+        Assertions.assertTrue(connection
+                .toString()
+                .contains(", isolationLevel=IsolationLevel{sql='REPEATABLE READ'}}"));
+      }
     }finally {
       connection.close().block();
     }
