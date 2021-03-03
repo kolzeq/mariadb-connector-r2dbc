@@ -91,7 +91,7 @@ public class TlsTest extends BaseConnectionTest {
 
   @Test
   void defaultHasNoSSL() throws Exception {
-    Assumptions.assumeFalse("maxscale".equals(System.getenv("srv")));
+    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv")) && !"skysql-ha".equals(System.getenv("srv")));
     Assumptions.assumeTrue(haveSsl(sharedConn));
     sharedConn
         .createStatement("SHOW STATUS like 'Ssl_version'")
@@ -108,6 +108,7 @@ public class TlsTest extends BaseConnectionTest {
 
   @Test
   void trustValidation() throws Exception {
+    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv")) && !"skysql-ha".equals(System.getenv("srv")));
     Assumptions.assumeTrue(haveSsl(sharedConn));
     MariadbConnectionConfiguration conf =
         TestConfiguration.defaultBuilder
@@ -175,6 +176,9 @@ public class TlsTest extends BaseConnectionTest {
 
   @Test
   void trustForceProtocol() throws Exception {
+    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
+                    && !"skysql".equals(System.getenv("srv"))
+                    && !"skysql-ha".equals(System.getenv("srv")));
     String trustProtocol = minVersion(8, 0, 0) ? "TLSv1.2" : "TLSv1.1";
     Assumptions.assumeTrue(haveSsl(sharedConn));
     MariadbConnectionConfiguration conf =

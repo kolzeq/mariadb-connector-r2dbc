@@ -82,6 +82,7 @@ public class Ed25519PluginTest extends BaseConnectionTest {
 
   @Test
   public void verificationEd25519AuthPlugin() throws Throwable {
+    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv")) && !"skysql-ha".equals(System.getenv("srv")));
     MariadbConnectionMetadata meta = sharedConn.getMetadata();
     Assumptions.assumeTrue(meta.isMariaDBServer() && meta.minVersion(10, 2, 0));
 
