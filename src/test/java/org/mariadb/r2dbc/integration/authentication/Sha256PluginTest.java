@@ -17,6 +17,7 @@
 package org.mariadb.r2dbc.integration.authentication;
 
 import io.r2dbc.spi.R2dbcNonTransientResourceException;
+import java.io.File;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,8 +26,6 @@ import org.mariadb.r2dbc.*;
 import org.mariadb.r2dbc.api.MariadbConnection;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
-import java.io.File;
 
 public class Sha256PluginTest extends BaseConnectionTest {
 
@@ -63,7 +62,7 @@ public class Sha256PluginTest extends BaseConnectionTest {
           File sslDir = new File(System.getProperty("user.dir") + "/ssl");
           if (sslDir.exists() && sslDir.isDirectory()) {
             rsaPublicKey = System.getProperty("user.dir") + "/ssl/public.key";
-          } else rsaPublicKey=null;
+          } else rsaPublicKey = null;
         }
       }
     }

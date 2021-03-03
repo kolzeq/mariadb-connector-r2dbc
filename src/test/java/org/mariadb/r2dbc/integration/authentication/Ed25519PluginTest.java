@@ -56,14 +56,13 @@ public class Ed25519PluginTest extends BaseConnectionTest {
             .blockLast();
       }
       sharedConn
-          .createStatement("GRANT SELECT on `" + TestConfiguration.database +"`.* to verificationEd25519AuthPlugin")
+          .createStatement(
+              "GRANT SELECT on `"
+                  + TestConfiguration.database
+                  + "`.* to verificationEd25519AuthPlugin")
           .execute()
           .blockLast();
-      sharedConn
-              .createStatement("FLUSH PRIVILEGES")
-              .execute()
-              .blockLast();
-
+      sharedConn.createStatement("FLUSH PRIVILEGES").execute().blockLast();
     }
   }
 
@@ -82,7 +81,8 @@ public class Ed25519PluginTest extends BaseConnectionTest {
 
   @Test
   public void verificationEd25519AuthPlugin() throws Throwable {
-    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv")) && !"skysql-ha".equals(System.getenv("srv")));
+    Assumptions.assumeTrue(
+        !"maxscale".equals(System.getenv("srv")) && !"skysql-ha".equals(System.getenv("srv")));
     MariadbConnectionMetadata meta = sharedConn.getMetadata();
     Assumptions.assumeTrue(meta.isMariaDBServer() && meta.minVersion(10, 2, 0));
 

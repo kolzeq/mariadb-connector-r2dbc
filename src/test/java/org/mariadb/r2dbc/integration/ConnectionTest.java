@@ -85,7 +85,8 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void connectionError() throws Exception {
-    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
+    Assumptions.assumeTrue(
+        !"maxscale".equals(System.getenv("srv"))
             && !"skysql".equals(System.getenv("srv"))
             && !"skysql-ha".equals(System.getenv("srv")));
 
@@ -110,7 +111,8 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void multipleCommandStack() throws Exception {
-    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
+    Assumptions.assumeTrue(
+        !"maxscale".equals(System.getenv("srv"))
             && !"skysql".equals(System.getenv("srv"))
             && !"skysql-ha".equals(System.getenv("srv")));
 
@@ -146,7 +148,8 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void connectionWithoutErrorOnClose() throws Exception {
-    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
+    Assumptions.assumeTrue(
+        !"maxscale".equals(System.getenv("srv"))
             && !"skysql".equals(System.getenv("srv"))
             && !"skysql-ha".equals(System.getenv("srv")));
     disableLog();
@@ -158,9 +161,10 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void connectionDuringError() throws Exception {
-    Assumptions.assumeTrue(!"maxscale".equals(System.getenv("srv"))
-                    && !"skysql".equals(System.getenv("srv"))
-                    && !"skysql-ha".equals(System.getenv("srv")));
+    Assumptions.assumeTrue(
+        !"maxscale".equals(System.getenv("srv"))
+            && !"skysql".equals(System.getenv("srv"))
+            && !"skysql-ha".equals(System.getenv("srv")));
     disableLog();
     MariadbConnection connection = createProxyCon();
     new java.util.Timer()
@@ -554,25 +558,23 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void getTransactionIsolationLevel() {
-    MariadbConnection connection = new MariadbConnectionFactory(TestConfiguration.defaultBuilder.build()).create().block();
+    MariadbConnection connection =
+        new MariadbConnectionFactory(TestConfiguration.defaultBuilder.build()).create().block();
     try {
       IsolationLevel defaultValue = IsolationLevel.REPEATABLE_READ;
 
-      if ("skysql".equals(System.getenv("srv"))
-              || "skysql-ha".equals(System.getenv("srv"))) {
+      if ("skysql".equals(System.getenv("srv")) || "skysql-ha".equals(System.getenv("srv"))) {
         defaultValue = IsolationLevel.READ_COMMITTED;
       }
 
-      Assertions.assertEquals(
-              defaultValue, connection.getTransactionIsolationLevel());
+      Assertions.assertEquals(defaultValue, connection.getTransactionIsolationLevel());
       connection.setTransactionIsolationLevel(IsolationLevel.READ_UNCOMMITTED).block();
       Assertions.assertEquals(
-              IsolationLevel.READ_UNCOMMITTED, connection.getTransactionIsolationLevel());
+          IsolationLevel.READ_UNCOMMITTED, connection.getTransactionIsolationLevel());
       connection.setTransactionIsolationLevel(defaultValue).block();
     } finally {
       connection.close().block();
     }
-
   }
 
   @Test
@@ -663,22 +665,23 @@ public class ConnectionTest extends BaseConnectionTest {
 
   @Test
   void toStringTest() {
-    MariadbConnection connection = new MariadbConnectionFactory(TestConfiguration.defaultBuilder.build()).create().block();
+    MariadbConnection connection =
+        new MariadbConnectionFactory(TestConfiguration.defaultBuilder.build()).create().block();
     try {
       Assertions.assertTrue(
-              connection
-                      .toString()
-                      .contains(
-                              "MariadbConnection{client=Client{isClosed=false, "
-                                      + "context=ConnectionContext{"));
-      if (!"skysql".equals(System.getenv("srv"))
-              && !"skysql-ha".equals(System.getenv("srv"))) {
+          connection
+              .toString()
+              .contains(
+                  "MariadbConnection{client=Client{isClosed=false, "
+                      + "context=ConnectionContext{"));
+      if (!"skysql".equals(System.getenv("srv")) && !"skysql-ha".equals(System.getenv("srv"))) {
 
-        Assertions.assertTrue(connection
+        Assertions.assertTrue(
+            connection
                 .toString()
                 .contains(", isolationLevel=IsolationLevel{sql='REPEATABLE READ'}}"));
       }
-    }finally {
+    } finally {
       connection.close().block();
     }
   }

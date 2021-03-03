@@ -555,8 +555,8 @@ public class PrepareResultSetTest extends BaseConnectionTest {
       List<String> endingStatus = prepareInfo(connection);
       // Com_stmt_prepare
       if (!"maxscale".equals(System.getenv("srv"))
-              && !"skysql-ha".equals(System.getenv("srv"))
-      && (isMariaDBServer() || !minVersion(8,0,0))) {
+          && !"skysql-ha".equals(System.getenv("srv"))
+          && (isMariaDBServer() || !minVersion(8, 0, 0))) {
         Assertions.assertEquals("5", endingStatus.get(1), endingStatus.get(1));
       }
 
